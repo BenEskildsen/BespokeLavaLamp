@@ -9,6 +9,7 @@ function Main(props) {
   const windowHeight = window.innerHeight;
 
   const [mode, setMode] = useState('red');
+  const [modeTabVisible, setModeTabVisible] = useState(true);
   const [grid, setGrid] = useState(initGrid(config.gridWidth, config.gridHeight));
 
   // handle screen rotation
@@ -41,34 +42,39 @@ function Main(props) {
   }, [grid, mode]);
 
   return (
-    <div id="canvasWrapper" style={{
-      height: '100%',
-      width: '100%',
-      margin: 'auto',
-      position: 'relative',
-    }}>
-      <div
-        style={{
-          position: 'absolute',
-          top: '6px',
-          left: '6px',
-          height: '40px',
-        }}
-      >
-        {config.modes.map(m => (
-          <Button
-            key={m + "_button"}
-            style={{
-              backgroundColor: m,
-              height: 20,
-              width: 28,
-            }}
-            label={'   '}
-            disabled={mode == m}
-            onClick={() => setMode(m)}
-          />))
-        }
-      </div>
+    <div id="canvasWrapper"
+      style={{
+        height: '100%',
+        width: '100%',
+        margin: 'auto',
+        position: 'relative',
+      }}
+      onClick={() => setModeTabVisible(!modeTabVisible)}
+    >
+      {!modeTabVisible ? null :
+        <div
+          style={{
+            position: 'absolute',
+            top: '6px',
+            left: '6px',
+            height: '40px',
+          }}
+        >
+          {config.modes.map(m => (
+            <Button
+              key={m + "_button"}
+              style={{
+                backgroundColor: m,
+                height: 40,
+                width: 48,
+              }}
+              label={'   '}
+              disabled={mode == m}
+              onClick={() => setMode(m)}
+            />))
+          }
+        </div>
+      }
       <canvas
         id="canvas"
         width={windowWidth} height={windowHeight}

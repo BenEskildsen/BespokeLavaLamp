@@ -19,10 +19,15 @@ function Main(props) {
       mode = _useState2[0],
       setMode = _useState2[1];
 
-  var _useState3 = useState(initGrid(config.gridWidth, config.gridHeight)),
+  var _useState3 = useState(true),
       _useState4 = _slicedToArray(_useState3, 2),
-      grid = _useState4[0],
-      setGrid = _useState4[1];
+      modeTabVisible = _useState4[0],
+      setModeTabVisible = _useState4[1];
+
+  var _useState5 = useState(initGrid(config.gridWidth, config.gridHeight)),
+      _useState6 = _slicedToArray(_useState5, 2),
+      grid = _useState6[0],
+      setGrid = _useState6[1];
 
   // handle screen rotation
 
@@ -36,6 +41,7 @@ function Main(props) {
     }
   }, [windowWidth, windowHeight]);
 
+  // handle switching modes
   useEffect(function () {
     var settings = config[mode];
     setGrid(initGrid(config.gridWidth, config.gridHeight));
@@ -49,20 +55,25 @@ function Main(props) {
     };
   }, [mode]);
 
+  // re-render when grid or mode changes
   useEffect(function () {
     render(grid, mode);
   }, [grid, mode]);
 
-  var wrapperStyle = {
-    height: '100%',
-    width: '100%',
-    margin: 'auto',
-    position: 'relative'
-  };
   return React.createElement(
     'div',
-    { id: 'canvasWrapper', style: wrapperStyle },
-    React.createElement(
+    { id: 'canvasWrapper',
+      style: {
+        height: '100%',
+        width: '100%',
+        margin: 'auto',
+        position: 'relative'
+      },
+      onClick: function onClick() {
+        return setModeTabVisible(!modeTabVisible);
+      }
+    },
+    !modeTabVisible ? null : React.createElement(
       'div',
       {
         style: {
@@ -77,8 +88,8 @@ function Main(props) {
           key: m + "_button",
           style: {
             backgroundColor: m,
-            height: 20,
-            width: 28
+            height: 40,
+            width: 48
           },
           label: '   ',
           disabled: mode == m,
