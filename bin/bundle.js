@@ -261,7 +261,7 @@ var config = {
   gridWidth: 60, // 960
   gridHeight: 96, // 1536
 
-  modes: ['red', 'saddlebrown', 'green', 'yellow'],
+  modes: ['red', 'saddlebrown', 'green', 'yellow', 'blue'],
 
   // mode-specific settings:
   red: {
@@ -424,7 +424,7 @@ var config = {
     computeNextVal: function computeNextVal(val, numAliveNeighbors, settings) {
       var nextVal = val - settings.decayRate;
       if (val == 0) {
-        var prob = 0.55;
+        var prob = 0.6;
         nextVal = numAliveNeighbors == 1 && Math.random() < prob ? 1 : 0;
       }
       return nextVal;
@@ -443,6 +443,52 @@ var config = {
         if (x + _i >= grid.length || y + _j >= grid[x].length) continue;
         if (x + _i < 0 || y + _j < 0) continue;
         sum += grid[x + _i][y + _j] == 1 ? 0.33 : 0;
+      }
+      return sum;
+    }
+  },
+
+  blue: {
+    msPerTick: 140,
+    liveMin: 4, // if alive, must have at least this many live neighbors to stay alive
+    liveMax: 6, // if alive, must have at most this many live neighbors to stay alive
+    deadMin: 3, // if dead, must have at least this many live neighbors to become alive
+    deadMax: 4, // if dead, must have at most this many live neighbors to become alive
+    noiseRate: 0.5,
+    backgroundColor: 'black',
+    color: function color(val) {
+      if (val > 170) {
+        return '#DC143C';
+      }
+      return val > 50 ? "#4B0082" : '#6495ED';
+    },
+    maxVal: 5,
+    decayRate: 0.01,
+    noiseFn: function noiseFn(x, y, width, height, noiseRate, nextAlive) {
+      if (x == 0 && Math.random() < noiseRate && y > 15 && y < height - 15) {
+        return 1;
+      }
+      return nextAlive;
+    },
+    computeNextVal: function computeNextVal(val, numAliveNeighbors, settings) {
+      var nextVal = val;
+      if (val >= 1 && val <= 350) {
+        var liveMax = val < 50 ? settings.liveMax : settings.liveMax + 3;
+        nextVal = numAliveNeighbors < settings.liveMin || numAliveNeighbors > settings.liveMax ? Math.min(val - settings.decayRate, 0.99) : val + 1;
+      } else {
+        nextVal = numAliveNeighbors < settings.deadMin || numAliveNeighbors > settings.deadMax ? Math.min(0.99, val - settings.decayRate) : 1;
+      }
+      return nextVal;
+    },
+    getNumAliveNeighbors: function getNumAliveNeighbors(grid, x, y) {
+      var sum = 0;
+      for (var i = -1; i <= 1; i++) {
+        for (var j = -1; j <= 1; j++) {
+          if (i == 0 && j == 0) continue;
+          if (x + i >= grid.length || y + j >= grid[x].length) continue;
+          if (x + i < 0 || y + j < 0) continue;
+          sum += grid[x + i][y + j] >= 1 ? 1 : 0;
+        }
       }
       return sum;
     }
